@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Leaflet mobile example</title>
+
+	<!-- <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"> -->
+
+	<!-- will want to get rid of mapbox or leaflet call, below -->
+	<link rel="stylesheet" href="layout.css" />
+	<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.css" />
+	<link href='https://api.tiles.mapbox.com/mapbox.js/v1.6.4/mapbox.css' rel='stylesheet' />
+
+	<script src='https://api.tiles.mapbox.com/mapbox.js/v1.6.4/mapbox.js'></script>
+	<script src="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.js"></script>
+	<script src="runphilly.js"></script>
+	<script src="http://cdnjs.cloudflare.com/ajax/libs/json2/20130526/json2.min.js"></script>
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+	<script src="http://cdnjs.cloudflare.com/ajax/libs/handlebars.js/2.0.0-alpha.2/handlebars.js"></script>
+
+	<style>
+		body {
+			padding: 0;
+			margin: 0;
+		}
+		html, body {
+			height: 100%;
+		}
+		#map {
+			min-height: 600px;
+		}
+	</style>
+</head>
+<body>
+
+	<div class="grid grid-pad">
+		<div class="col-2-3">
+		    <div class="module">
+				<div id="map"></div>	
+			</div> 
+	   </div>
+	   <div class="col-1-3">
+		 <div class="module">
+				<div id="info"></div>	
+		 </div>
+	   </div>
+	</div>
+	
+	<script id="entry-template" type="text/x-handlebars-template">
+	  <div class="entry">
+	  {{#if material}}
+		<h1>{{objectid}} {{material}}</h1>
+	  {{else}}
+		<h1>{{objectid}}{{material}}</h1>
+	  {{/if}}
+	  </div>
+	</script>
+	
+	<script>
+		var myStyle = {
+			"color": "#ff7800",
+			"weight": 5,
+			"opacity": 0.65
+		};
+		var source   = $("#entry-template").html();
+		var template = Handlebars.compile(source);
+	
+		//var map = L.map('map');
+		
+		// Load TileJSON
+		wax.tilejson('runphilly.tilejson', function(tilejson) {
+		 
+		  // Create map and add image tiles	  
+		  var map = new L.Map('map')
+			.addLayer(new wax.leaf.connector(tilejson))
+			.setView(new L.LatLng(39.95,-75.17),14);
+		  
+		  // Create map legend
+		  wax.leaf.legend(map, tilejson).appendTo(map._container);
+		 
+		  // Add map interaction (tooltips)	
+		  wax.leaf.interaction()
+			.map(map)
+			.tilejson(tilejson)
+			.on(wax.tooltip().animate(true).parent(map._container).events());
+		 
+		});
+		
+		/*
+		function onEachFeature(feature, layer) {
+			
+				layer.on('click', function(e) {
+				var html = template(e.target.feature.properties);
+				$("#info").append(html);
+			});
+		}
+
+		L.tileLayer('tiles/{z}/{x}/{y}.png', {
+			minZoom: 9,
+			maxZoom: 14,
+			tms: true,
+			attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://cloudmade.com">CloudMade</a>'
+		}).addTo(map);
+		
+		L.geoJson(rpdata, {
+			style: myStyle,
+			onEachFeature: onEachFeature
+		}).addTo(map);
+		*/
+		
+		//map.setView(new L.LatLng(39.95,-75.17),14);
+		//map.addLayer(osm);
+		
+/*
+		function onLocationFound(e) {
+			var radius = e.accuracy / 2;
+
+			L.marker(e.latlng).addTo(map)
+				.bindPopup("You are within " + radius + " meters from this point").openPopup();
+
+			L.circle(e.latlng, radius).addTo(map);
+		}
+
+		function onLocationError(e) {
+			alert(e.message);
+		}
+
+		map.on('locationfound', onLocationFound);
+		map.on('locationerror', onLocationError);
+
+		map.locate({setView: true, maxZoom: 16});*/
+	</script>
+</body>
+</html>
