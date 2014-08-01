@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Leaflet mobile example</title>
+	<title>runphi.ly</title>
 
 	<!-- <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"> -->
 
@@ -11,7 +11,6 @@
 	<link href='dev-dependencies/mapbox.css' rel='stylesheet' />
 
 	<script src='dev-dependencies/mapbox.js'></script>
-	<script src="dev-dependencies/leaflet.js"></script>
 	<script src="runphilly.js"></script>
 	<script src="dev-dependencies/json2.min.js"></script>
 	<script src="dev-dependencies/jquery.min.js"></script>
@@ -31,7 +30,7 @@
 	</style>
 </head>
 <body>
-
+	<div><span style="padding:25%;font: 36px 'Helvetica Neue', Arial, Helvetica, sans-serif;">runphi.ly</span></div>
 	<div class="grid grid-pad">
 		<div class="col-2-3">
 		    <div class="module">
@@ -47,10 +46,10 @@
 	
 	<script id="entry-template" type="text/x-handlebars-template">
 	  <div class="entry">
-	  {{#if material}}
-		<h1>{{objectid}} {{material}}</h1>
+	  {{#if OBJECTID}}
+		<h1>{{OBJECTID}}</h1>
 	  {{else}}
-		<h1>{{objectid}}{{material}}</h1>
+		<h1>{{objectid}}</h1>
 	  {{/if}}
 	  </div>
 	</script>
@@ -61,23 +60,30 @@
 			"weight": 5,
 			"opacity": 0.65
 		};
-		var source   = $("#entry-template").html();
-		var template = Handlebars.compile(source);
-	
-				var myStyle = {
-			"color": "#ff7800",
-			"weight": 5,
-			"opacity": 0.65
-		};
-		var source   = $("#entry-template").html();
+		var source = $("#entry-template").html();
 		var template = Handlebars.compile(source);
 	
 		//var map = L.map('map');
 		
-		// Create map and add image tiles	  
-		var map = L.mapbox.map('map', 'runphilly.mbtiles')
+		// Create map and add image tiles	
+		// LOOKUP KLOKANS EXAMPLE FOR THIS	https://www.mapbox.com/demo/visiblemap/	
+		// temp disabled for offline
+		var map = L.mapbox.map('map', 'http://localhost/runphilly/mbtiles/runphilly_fc2346.json');
 		map.setView(new L.LatLng(39.95,-75.17),14);
+		map.gridLayer.on('click', function(data){
+		  console.log(data);
+		  if (typeof data.data == 'undefined') {
+			//Nothing to do here!
+			return;
+		  } else {
+		    console.log(data.data);
+			var jsonTrail = template(data.data);
+			console.log(jsonTrail);
+			$("#info").append(jsonTrail);
+		  }
+		});
 		
+
 		/*
 		function onEachFeature(feature, layer) {
 			

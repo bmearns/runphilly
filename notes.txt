@@ -1,0 +1,23 @@
+I think the breakthrough was that I discovered that wax is an old/obsolete framework ... should just be using mapbox.js, which supports utmgrid in .mbtiles
+
+Should be able  to just create an mbtiles with tilemill, including action and this will include utfgrid to do interaction through mapbox.js
+... revisit last layout but redo using mapbox.js/mbtiles/utfgrid
+... do utfgrid interaction seperately at first, new mbtiles/simple interaction
+
+
+... actually does seem like I will need to generate tilejson from mbtiles
+
+{
+    "type": "Point",
+    "coordinates": [
+        -105.01621,
+        39.57422
+    ]
+}
+
+osm -> sqlite (and make view based on google sheets) -> mbtiles -> (utfgrid tiles/tilejson) -> mapbox.js
+
+... how much does mapbox cost again?
+
+sqlite w/ trails, parks, etc. -> views -> tilemilll -> mbtiles
+how to modify geometries? ... don't, for now?
