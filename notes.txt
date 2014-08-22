@@ -19,5 +19,141 @@ osm -> sqlite (and make view based on google sheets) -> mbtiles -> (utfgrid tile
 
 ... how much does mapbox cost again?
 
-sqlite w/ trails, parks, etc. -> views -> tilemilll -> mbtiles
+sqlite w/ trails, parks, etc. -> views -> git commit/push -> tilemill on local -> mbtiles
 how to modify geometries? ... don't, for now?
+
+... can create db using spatialite gui
+
+... next sync up to amazon
+
+ACTUALLY, JUST SEND ALON A SQLITE FILE FOR NOW
+
+first need to combine spatialite/sqlite file with tilemilll, since that is where editing will happen.  once this has been done (workflow tested) send to alon
+
+there will be a challenge with storing spatialite in sqlite with php (because of wampp/extension issue) ... maybe add this to code but do this part on the server?
+
+
+/// 
+create runphilly.sqlite with spatialite
+loaded all_trails-proj4326 to runphilly.sqlite .. merged two name columns, may have deleted another, improved baxter entry
+table name=trails, geometry column=geometry
+same with parkbounds_proj (parks)
+
+CREATE TABLE clubs (
+id INTEGER NOT NULL
+    PRIMARY KEY AUTOINCREMENT,
+name TEXT,
+description TEXT,
+url TEXT)
+
+NEED TO JOIN JOIN ON NAME FIELD
+
+1	1	West Philly Runners	Wednesday 6:30p at Abbysnnia, 45th and Locust	http://www.westphillyrunners.com	NULL
+INSERT INTO clubs (name, description, url) VALUES ("West Philly Runners", "Wednesday 6:30p at Abbysnnia, 45th and Locust", "http://www.westphillyrunners.com");
+
+
+or should be doing spatial joins?!!  everything just has spatial relationship
+... not sure best method for input
+
+needed to remove some overlapping park features (e.g., Cobb's Creek and Cobb's Creek North)
+
+later do a CONTAINS query to generate a list of POIs in the big parks (e.g., horticultural center, lloyd hall,etc.)
+
+check out more elaborate query result sets and json structures (e.g., objects in properties result to handle one to many, like many clubs for a park)
+
+DROP TABLE output;
+
+CREATE TABLE output(
+  pk_uid INT PRIMARY KEY,
+  trail_material TEXT,
+  trail_parkname TEXT,
+  trail_type TEXT,
+  trail_width INT,
+  trail_condition TEXT,
+  trail_limits TEXT,
+  trail_name TEXT,
+  trail_feet REAL,
+  trail_geometry NUM,
+  club_name TEXT,
+  club_description TEXT,
+  club_url TEXT,
+  club_geometry NUM,
+  park_id INT,
+  park_name TEXT,
+  park_acres REAL,
+  park_district INT,
+  park_address TEXT,
+  park_geometry NUM
+);
+
+UPDATE output SET trail_geometry = SetSrid(trail_geometry, 4326);
+UPDATE output SET trail_geometry = (SELECT RecoverGeometryColumn('output', 'trail_geometry', 4326, 'MULTILINESTRING', 2));
+
+--LIMITED THE NUMBER RETURNED FOR TESTING ... NEED TO FIGURE OUT WHY CONSTRAIN FAILS
+
+INSERT INTO output
+SELECT
+t.PK_UID	as	pk_uid,
+t.MATERIAL	as	trail_material,
+t.PARKNAME	as	trail_parkname,
+t.TRAILTYPE	as	trail_type,
+t.WIDTH	as	trail_width,
+t.CONDITION	as	trail_condition,
+t.LIMITS	as	trail_limits,
+t.NAME	as	trail_name,
+t.FEET	as	trail_feet,
+t.geometry	as	trail_geometry,
+c.NAME	as	club_name,
+c.description	as	club_description,
+c.url	as	club_url,
+c.geometry	as	club_geometry,
+p.OBJECTID	as	park_id,
+p.NAME	as	park_name,
+p.ACRES	as	park_acres,
+p.DISTRICT	as	park_district,
+p.ADDRESS	as	park_address,
+p.geometry	as	park_geometry	
+from trails as t
+INNER JOIN parks as p
+ON
+INTERSECTS(t.geometry, p.geometry)
+LEFT OUTER JOIN clubs as c  
+ON
+Distance(p.geometry, c.geometry) < .1
+LIMIT 20;
+
+
+
+NOW FEED THIS TO TILEMILL for tiles layer
+
+
+
+NEXT IMPROVE RESULT WITH HANDLEBARS/DISPLAY ... WHAT GETS DISPLAYED?
+
+tolocal.info
+
+
+**** NOT NEEDED, IS HERE FOR ARCHIVE *****
+
+QUERY DOES NOT RETURN VALID GEOMETRIES FOR TILEMILL/QGIS (trails)
+
+INSERT INTO views_geometry_columns
+    (view_name, view_geometry, view_rowid, f_table_name, f_geometry_column)
+  VALUES ('output', 'geometry', 'PK_UID', 'trails', 'geometry');
+  
+  maybe just script this as a table for now and skip doing this as a view
+  
+CREATE TABLE output AS
+SELECT
+t.*,
+c.*,
+p.*
+from trails as t
+INNER JOIN parks as p
+ON
+INTERSECTS(t.geometry, p.geometry)
+LEFT OUTER JOIN clubs as c  
+ON
+Distance(p.geometry, c.geometry) < .1;
+
+REVIEW NOTEPADS FOR WHAT TO DISPLAY, WHEN
