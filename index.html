@@ -71,17 +71,17 @@
 		// Create map and add image tiles	
 		// LOOKUP KLOKANS EXAMPLE FOR THIS	https://www.mapbox.com/demo/visiblemap/	
 		// temp disabled for offline
-		var map = L.mapbox.map('map', 'http://localhost/runphilly/mbtiles/runphilly_e6d93e.json');
+		var map = L.mapbox.map('map', 'mbtiles/runphilly_e6d93e.json');
 		map.setView(new L.LatLng(39.95,-75.17),14);
 		map.gridLayer.on('click', function(data){
-		  console.log(data);
+		  //console.log(data);
 		  if (typeof data.data == 'undefined') {
 			//Nothing to do here!
 			return;
 		  } else {
-		    console.log(data.data);
+		    //console.log(data.data);
 			var jsonTrail = template(data.data);
-			console.log(jsonTrail);
+			//console.log(jsonTrail);
 			$("#info").html(jsonTrail);
 		  }
 		});

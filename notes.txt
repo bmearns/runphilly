@@ -126,11 +126,9 @@ LIMIT 20;
 
 NOW FEED THIS TO TILEMILL for tiles layer
 
-
-
 NEXT IMPROVE RESULT WITH HANDLEBARS/DISPLAY ... WHAT GETS DISPLAYED?
 
-tolocal.info
+tolocal.info toloco.info
 
 
 **** NOT NEEDED, IS HERE FOR ARCHIVE *****
