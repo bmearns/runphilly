@@ -8,7 +8,13 @@
 	<!-- will want to get rid of mapbox or leaflet call, below -->
 	<link rel="import" href="dependencies.html">
 	<link rel="stylesheet" href="layout.css" />
-	<script src="runphilly.js"></script>
+
+	<link rel="stylesheet" href="//api.tiles.mapbox.com/mapbox.js/v2.0.1/mapbox.css" />
+
+	<script src="//api.tiles.mapbox.com/mapbox.js/v2.0.1/mapbox.js"></script>
+	<script src="//cdnjs.cloudflare.com/ajax/libs/json2/20130526/json2.min.js"></script>
+	<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+	<script src="//cdnjs.cloudflare.com/ajax/libs/handlebars.js/2.0.0-alpha.4/handlebars.min.js"></script>
 
 	<style>
 		body {
@@ -68,17 +74,17 @@
 		// Create map and add image tiles	
 		// LOOKUP KLOKANS EXAMPLE FOR THIS	https://www.mapbox.com/demo/visiblemap/	
 		// temp disabled for offline
-		var map = L.mapbox.map('map', 'http://localhost/runphilly/mbtiles/runphilly_e6d93e.json');
+		var map = L.mapbox.map('map', 'mbtiles/runphilly_e6d93e.json');
 		map.setView(new L.LatLng(39.95,-75.17),14);
 		map.gridLayer.on('click', function(data){
-		  console.log(data);
+		  //console.log(data);
 		  if (typeof data.data == 'undefined') {
 			//Nothing to do here!
 			return;
 		  } else {
-		    console.log(data.data);
+		    //console.log(data.data);
 			var jsonTrail = template(data.data);
-			console.log(jsonTrail);
+			//console.log(jsonTrail);
 			$("#info").html(jsonTrail);
 		  }
 		});
